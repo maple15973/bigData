@@ -1,5 +1,4 @@
-import sqlite3
-import gc
+import sqlite3,gc,time
 
 RECORD_NUM=10
 RECORD_SIZE=8
@@ -31,13 +30,6 @@ class Record:
   def score():
     return self.score
 
-def processing(r,raw):
-  for data in raw:
-    r.assign_data(data)
-
-def separate_data(data):
-  print(data.split())
-
 conn = sqlite3.connect('movies.db')
 c=conn.cursor()
 c.execute('''CREATE TABLE IF NOT EXISTS MOVIE(USERID TEXT, SCORE decimal(3,1) , PRODUCTID TEXT)''')
@@ -48,19 +40,18 @@ counter=0
 maxcounter=0
 with open("movies.txt", "r",encoding='utf-8', errors='ignore') as myfile:
   for line in myfile:
-    print(str(counter)+"  "+line)
     head.append(line)
     counter+=1
     maxcounter+=1
     if counter%9==0:
       r = Record()
-      processing(r,head)
-      #r.printRecord()
+      for data in head:
+        r.assign_data(data)
+      r.printRecord()
       c.execute('INSERT INTO MOVIE(USERID, PRODUCTID, SCORE) VALUES("'+r.userId+'","'+str(r.productId)+'","'+str(r.score)+'")')
       conn.commit()
       counter=0
       del head
       gc.collect()
       head=[]
-    if maxcounter==8000:
-      break
+      time.sleep(10)
