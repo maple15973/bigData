@@ -9,8 +9,16 @@ def user():
   c.execute(sql)
   results = c.fetchall()
   print("========EACH USERID AVG, VAR========")
+  index = 0
+  result = 0
   for row in results:
+    index+=1
+    result = result+row[1]
     print("USERID: "+str(row[0])+", AVG: "+str("%.3f " % row[1])+", VAR: "+str("%.3f " % row[2]))
+  print("=========USER AVG, VAR========")
+  result = result/index
+  print("AVG: "+ str("%.3f" % result))
+
 
 #Each productId avg
 def product():
@@ -30,7 +38,6 @@ def score():
   for row in results:
     print("AVG: "+str("%.3f" % row[0])+", VAR: "+str("%.3f " % row[1]))
 
-
 user()
-product()
-score()
+#product()
+#score()
