@@ -42,7 +42,7 @@ def check_first(myfile):
         counter+=1
 
 def open_file(index):
-  conn = sqlite3.connect('movies.db')
+  conn = sqlite3.connect('movies_test.db')
   c=conn.cursor()
   head =[]
   counter=0
@@ -66,7 +66,7 @@ def open_file(index):
     del c
     conn.close()
 
-conn = sqlite3.connect('movies.db')
+conn = sqlite3.connect('movies_test.db')
 c=conn.cursor()
 c.execute('''CREATE TABLE IF NOT EXISTS MOVIE(USERID TEXT, SCORE decimal(3,1) , PRODUCTID TEXT)''')
 print("Connect table successfully!")
@@ -74,7 +74,7 @@ c.close()
 del c
 conn.close()
 
-for i in range(0, 10):
+for i in range(0, 1):
   p = Process(target = open_file, args=(i,))
   p.start()
 

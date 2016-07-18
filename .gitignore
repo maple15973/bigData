@@ -2,3 +2,4 @@ all.txt
 movies/movies.db
 movies/movie_split/*
 moviescopy.db
+movies/movies_test.db
