@@ -1,3 +1,3 @@
-movies.txt
 all.txt
-movies.db
+movies/movies.db
+movies/movie_split/*

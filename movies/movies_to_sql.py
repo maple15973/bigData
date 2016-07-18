@@ -54,4 +54,4 @@ with open("movies.txt", "r",encoding='utf-8', errors='ignore') as myfile:
       del head
       gc.collect()
       head=[]
-      time.sleep(10)
+      time.sleep(0.01)
