@@ -1,7 +1,6 @@
 import sqlite3,gc,time
+from multiprocessing import Process
 
-RECORD_NUM=10
-RECORD_SIZE=8
 class Record:
   productId=""
   userId=""
@@ -23,35 +22,59 @@ class Record:
     print("ProductId: "+ self.productId)
     print("UserId: "+ self.userId)
     print("Score: "+ str(self.score)) 
-  def productId():
-    return self.productId
-  def userId():
-    return self.userId
-  def score():
-    return self.score
+
+def processing(head,conn,c):
+  r = Record()
+  for data in head:
+    r.assign_data(data)
+  r.printRecord()
+  c.execute('INSERT INTO MOVIE(USERID, PRODUCTID, SCORE) VALUES("'+r.userId+'","'+str(r.productId)+'","'+str(r.score)+'")')
+  conn.commit()
+
+def check_first(myfile):
+  counter = 1
+  for line in myfile:
+    split = line.split()
+    if split:
+      if split[0].find('product/productId')!=-1:
+        return counter
+      else:
+        counter+=1
+
+def open_file(index):
+  conn = sqlite3.connect('movies.db')
+  c=conn.cursor()
+  head =[]
+  counter=0
+  maxcounter=0
+  checkfirst=False
+  filename = 'movie_split/movie'+str(index)+'.txt'
+  with open(filename, "r",encoding='utf-8', errors='ignore') as myfile:
+    num = check_first(myfile)
+  with open(filename, "r",encoding='utf-8', errors='ignore') as myfile:
+    for line in myfile:
+      maxcounter+=1
+      if maxcounter<=num:
+        continue
+      head.append(line)
+      counter+=1
+      if counter%9==0:
+        processing(head,conn,c)
+        gc.collect()
+        head=[]
+    c.close()
+    del c
+    conn.close()
 
 conn = sqlite3.connect('movies.db')
 c=conn.cursor()
 c.execute('''CREATE TABLE IF NOT EXISTS MOVIE(USERID TEXT, SCORE decimal(3,1) , PRODUCTID TEXT)''')
 print("Connect table successfully!")
+c.close()
+del c
+conn.close()
 
-head=[]
-counter=0
-maxcounter=0
-with open("movies.txt", "r",encoding='utf-8', errors='ignore') as myfile:
-  for line in myfile:
-    head.append(line)
-    counter+=1
-    maxcounter+=1
-    if counter%9==0:
-      r = Record()
-      for data in head:
-        r.assign_data(data)
-      r.printRecord()
-      c.execute('INSERT INTO MOVIE(USERID, PRODUCTID, SCORE) VALUES("'+r.userId+'","'+str(r.productId)+'","'+str(r.score)+'")')
-      conn.commit()
-      counter=0
-      del head
-      gc.collect()
-      head=[]
-      time.sleep(0.01)
+for i in range(0, 10):
+  p = Process(target = open_file, args=(i,))
+  p.start()
+

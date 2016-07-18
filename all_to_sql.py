@@ -1,7 +1,6 @@
 import sqlite3,gc,time
 from multiprocessing import Process
 
-#q = Queue.Queue()
 class Record:
   productId=""
   userId=""
@@ -28,12 +27,6 @@ class Record:
     print("UserId: "+ self.userId)
     print("Score: "+ str(self.score))
     print("Title: "+ self.productTitle)
-  def productId():
-    return self.productId
-  def userId():
-    return self.userId
-  def score():
-    return self.score
 
 def processing(head):
   r = Record()
